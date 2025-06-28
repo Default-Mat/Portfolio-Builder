@@ -1,0 +1,158 @@
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
+
+    // Type for the project data
+    type Project = {
+        id: number;
+        title: { rendered: string };
+        acf: {
+        description: string;
+        technologies: string;
+        url: string;
+        images?: number; // Array of image IDs
+        };
+    };
+
+    let project: Project | null = null;
+    let loading = true;
+    let error = false;
+    let imageUrl: string | null = null;
+
+    $: projectId = $page.params.id;
+
+    onMount(async () => {
+        try {
+            const projectRes = await fetch(`http://localhost/portfolio-wp/wp-json/wp/v2/project/${projectId}`);
+            if (!projectRes.ok) {
+                throw new Error('Project not found');
+            }
+            project = await projectRes.json();
+
+            if (project && project.acf?.images) {
+                let mediaUrl = `http://localhost/portfolio-wp/wp-json/wp/v2/media/${project.acf.images}`;
+                const mediaRes = await fetch(mediaUrl);
+                if (!mediaRes.ok) {
+                    throw new Error('Failed to load media');
+                }
+                const mediaData = await mediaRes.json();
+                
+                imageUrl = mediaData.source_url;
+            }
+        } catch (error) {
+            console.error('Failed to load project:', error);
+            error = true;
+        } finally {
+            loading = false;
+        }
+    });
+</script>
+
+<svelte:head>
+  <title>{project ? project.title.rendered : 'Project Details'} - Matin Meskinnavaz</title>
+</svelte:head>
+
+<!-- Loading State -->
+{#if loading}
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading project details...</p>
+    </div>
+  </div>
+{:else if error}
+  <!-- Error State -->
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="text-center">
+      <div class="text-red-500 text-6xl mb-4">⚠️</div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Project Not Found</h1>
+      <p class="text-gray-600 mb-6">The project you're looking for doesn't exist or has been removed.</p>
+      <a href="/" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Portfolio
+      </a>
+    </div>
+  </div>
+{:else if project}
+  <!-- Project Detail Content -->
+  <div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b">
+      <div class="max-w-6xl mx-auto px-4 py-6">
+        <a href="/" class="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors mb-4">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          Back to Portfolio
+        </a>
+        <h1 class="text-4xl font-bold text-gray-800">{@html project.title.rendered}</h1>
+      </div>
+    </div>
+
+    <!-- Project Content -->
+    <div class="max-w-4xl mx-auto px-4 py-12">
+      <div class="bg-white rounded-xl shadow-lg p-8">
+        <!-- Project Images -->
+        {#if imageUrl}
+          <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Project Image</h2>
+            <div class="relative group overflow-hidden rounded-lg">
+              <img 
+                src={imageUrl} 
+                alt={project.title.rendered}
+                class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <!-- <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div> -->
+            </div>
+          </div>
+        {/if}
+
+        <!-- Project Description -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Project Overview</h2>
+          <p class="text-gray-700 leading-relaxed text-lg">{project.acf.description}</p>
+        </div>
+
+        <!-- Technologies Used -->
+        <div class="mb-8">
+          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Technologies Used</h2>
+          <div class="flex flex-wrap gap-2">
+            {#each project.acf.technologies.split(',').map(tech => tech.trim()) as technology}
+              <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                {technology}
+              </span>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Project Actions -->
+        <div class="border-t pt-8">
+          <div class="flex flex-wrap gap-4">
+            <a 
+              href={project.acf.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              View Live Project
+            </a>
+            <a 
+              href="/" 
+              class="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+              Back to Portfolio
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{/if} 

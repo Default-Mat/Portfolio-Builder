@@ -1,2 +1,12 @@
+/* Importing Bootstrap and Tailwind CSS */
 @import "bootstrap/dist/css/bootstrap.min.css"; 
 @import "tailwindcss";
+
+/* Global link styles - remove underlines */
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
