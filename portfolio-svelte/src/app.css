@@ -1,3 +1,44 @@
+/* Vazir Persian Font */
+@font-face {
+  font-family: 'Vazir';
+  src: url('/fonts/Vazir.woff2') format('woff2'),
+       url('/fonts/Vazir.woff') format('woff'),
+       url('/fonts/Vazir.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('/fonts/Vazir-Bold.woff2') format('woff2'),
+       url('/fonts/Vazir-Bold.woff') format('woff'),
+       url('/fonts/Vazir-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('/fonts/Vazir-Light.woff2') format('woff2'),
+       url('/fonts/Vazir-Light.woff') format('woff'),
+       url('/fonts/Vazir-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vazir';
+  src: url('/fonts/Vazir-Medium.woff2') format('woff2'),
+       url('/fonts/Vazir-Medium.woff') format('woff'),
+       url('/fonts/Vazir-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Importing Bootstrap and Tailwind CSS */
 @import "bootstrap/dist/css/bootstrap.min.css"; 
 @import "tailwindcss";
@@ -9,4 +50,84 @@ a {
 
 a:hover {
   text-decoration: none;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+  font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* RTL specific adjustments */
+[dir="rtl"] .ml-auto {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-left: 0 !important;
+  margin-right: 0.5rem !important;
+}
+
+[dir="rtl"] .mr-2 {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+[dir="rtl"] .ml-4 {
+  margin-left: 0 !important;
+  margin-right: 1rem !important;
+}
+
+[dir="rtl"] .mr-4 {
+  margin-right: 0 !important;
+  margin-left: 1rem !important;
+}
+
+/* RTL flex direction adjustments */
+[dir="rtl"] .flex-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .flex-row-reverse {
+  flex-direction: row;
+}
+
+/* RTL text alignment */
+[dir="rtl"] .text-left {
+  text-align: right !important;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left !important;
+}
+
+/* Persian number support */
+[dir="rtl"] {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* RTL button and input adjustments */
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+/* RTL icon positioning */
+[dir="rtl"] .icon-left {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .icon-right {
+  margin-left: 0;
+  margin-right: 0.5rem;
 }

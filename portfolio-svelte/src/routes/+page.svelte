@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import ProjectCard from './project-card.svelte';
+  import LanguageSwitcher from '../lib/components/LanguageSwitcher.svelte';
+  import { currentLanguage, translations } from '../lib/stores/language.js';
 
   // Type for the project data
   type Project = {
@@ -10,6 +12,8 @@
       description: string;
       technologies: string;
       url: string;
+      عنوان?: string; // Persian title
+      توضیحات?: string; // Persian description
     };
   };
 
@@ -31,21 +35,53 @@
       mounted = true;
     }, 100);
   });
+
+  // Create reactive localized projects data
+  $: localizedProjects = projects.map(project => ({
+    ...project,
+    localizedTitle: $currentLanguage === 'fa' && project.acf.عنوان 
+      ? project.acf.عنوان 
+      : project.title.rendered,
+    localizedDescription: $currentLanguage === 'fa' && project.acf.توضیحات 
+      ? project.acf.توضیحات 
+      : project.acf.description
+  }));
+
+  // Get localized project title
+  function getLocalizedTitle(project: Project): string {
+    if ($currentLanguage === 'fa' && project.acf.عنوان) {
+      return project.acf.عنوان;
+    }
+    return project.title.rendered;
+  }
+
+  // Get localized project description
+  function getLocalizedDescription(project: Project): string {
+    if ($currentLanguage === 'fa' && project.acf.توضیحات) {
+      return project.acf.توضیحات;
+    }
+    return project.acf.description;
+  }
 </script>
 
+<!-- Language Switcher -->
+<LanguageSwitcher />
+
 <!-- Hero Section with Personal Information -->
-<section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-16 px-4 overflow-hidden">
+<section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-16 px-4 overflow-hidden" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
     <div class="text-center mb-12">
       <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg transform transition-all duration-700 {mounted ? 'scale-100 opacity-100' : 'scale-75 opacity-0'} hover:scale-110 hover:shadow-xl">
-        MM
+        {translations[$currentLanguage].hero.icon}
       </div>
-      <h1 class="text-5xl font-bold text-gray-800 mb-4 transform transition-all duration-700 delay-200 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">Matin Meskinnavaz</h1>
-      <p class="text-xl text-gray-600 mb-6 transform transition-all duration-700 delay-300 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">Full Stack Developer</p>
+      <h1 class="text-5xl font-bold text-gray-800 mb-4 transform transition-all duration-700 delay-200 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
+        {translations[$currentLanguage].hero.title}
+      </h1>
+      <p class="text-xl text-gray-600 mb-6 transform transition-all duration-700 delay-300 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
+        {translations[$currentLanguage].hero.subtitle}
+      </p>
       <p class="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed transform transition-all duration-700 delay-400 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
-        Passionate developer with 1+ years of experience creating modern web applications. 
-        I specialize in Node.js, Python, and MySQL, delivering scalable solutions 
-        that make a difference.
+        {translations[$currentLanguage].hero.description}
       </p>
     </div>
 
@@ -53,41 +89,43 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="skill-card bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: 500ms;">
         <div class="text-blue-600 text-2xl mb-3 transform transition-transform duration-300 hover:scale-110">💻</div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Frontend</h3>
-        <p class="text-gray-600">Svelte, TypeScript, Tailwind CSS, Bootstrap, WordPress</p>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">{translations[$currentLanguage].skills.frontend}</h3>
+        <p class="text-gray-600">{translations[$currentLanguage].skills.frontendDesc}</p>
       </div>
       <div class="skill-card bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: 600ms;">
         <div class="text-green-600 text-2xl mb-3 transform transition-transform duration-300 hover:scale-110">⚙️</div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">Backend</h3>
-        <p class="text-gray-600">Node.js, Python, PHP, MySQL, SQLite</p>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">{translations[$currentLanguage].skills.backend}</h3>
+        <p class="text-gray-600">{translations[$currentLanguage].skills.backendDesc}</p>
       </div>
       <div class="skill-card bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: 700ms;">
         <div class="text-purple-600 text-2xl mb-3 transform transition-transform duration-300 hover:scale-110">☁️</div>
-        <h3 class="text-lg font-semibold text-gray-800 mb-2">DevOps</h3>
-        <p class="text-gray-600">AWS, Docker, CI/CD, Git, Linux</p>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">{translations[$currentLanguage].skills.devops}</h3>
+        <p class="text-gray-600">{translations[$currentLanguage].skills.devopsDesc}</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Projects Section -->
-<section class="py-16 px-4 bg-gray-50">
+<section class="py-16 px-4 bg-gray-50" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-4xl font-bold text-center text-gray-800 projects-heading transform transition-all duration-700 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}" style="transition-delay: 800ms;">My Projects</h2>
+    <h2 class="text-4xl font-bold text-center text-gray-800 projects-heading transform transition-all duration-700 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}" style="transition-delay: 800ms;">
+      {translations[$currentLanguage].projects.title}
+    </h2>
 
     <!-- Displaying projects -->
     {#if projects.length > 0}
       <div class="project-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {#each projects as project, index}
+        {#each localizedProjects as project, index}
           <div class="project-card transform transition-all duration-300 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: {900 + (index * 100)}ms;">
-            <ProjectCard {project} />
+            <ProjectCard {project} currentLang={$currentLanguage} {getLocalizedTitle} {getLocalizedDescription} />
           </div>
         {/each}
       </div>
     {:else}
       <div class="flex justify-center items-center min-h-[200px] transform transition-all duration-700 {mounted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}">
         <div class="spinner-border text-primary animate-spin" role="status">
-          <span class="visually-hidden">Loading projects...</span>
+          <span class="visually-hidden">{translations[$currentLanguage].projects.loading}</span>
         </div>
       </div>
     {/if}
@@ -181,5 +219,33 @@
   /* Projects heading margin override */
   .projects-heading {
     margin-bottom: 3rem !important;
+  }
+
+  /* RTL specific styles */
+  [dir="rtl"] .skill-card {
+    text-align: right;
+  }
+
+  [dir="rtl"] .project-card {
+    text-align: right;
+  }
+
+  /* Persian font support */
+  [dir="rtl"] {
+    font-family: 'Tahoma', 'Arial', sans-serif;
+  }
+
+  /* RTL grid adjustments */
+  [dir="rtl"] .grid {
+    direction: rtl;
+  }
+
+  /* RTL button and link adjustments */
+  [dir="rtl"] .btn {
+    direction: rtl;
+  }
+
+  [dir="rtl"] a {
+    direction: rtl;
   }
 </style>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { onMount } from 'svelte';
+    import { currentLanguage, translations } from '../../../lib/stores/language.js';
 
     // Type for the project data
     type Project = {
@@ -11,6 +12,8 @@
         technologies: string;
         url: string;
         images?: number; // Array of image IDs
+        عنوان?: string; // Persian title
+        توضیحات?: string; // Persian description
         };
     };
 
@@ -46,38 +49,60 @@
             loading = false;
         }
     });
+
+    // Get localized project title
+    function getLocalizedTitle(project: Project): string {
+        if ($currentLanguage === 'fa' && project.acf.عنوان) {
+            return project.acf.عنوان;
+        }
+        return project.title.rendered;
+    }
+
+    // Get localized project description
+    function getLocalizedDescription(project: Project): string {
+        if ($currentLanguage === 'fa' && project.acf.توضیحات) {
+            return project.acf.توضیحات;
+        }
+        return project.acf.description;
+    }
 </script>
 
 <svelte:head>
-  <title>{project ? project.title.rendered : 'Project Details'} - Matin Meskinnavaz</title>
+  <title>{project ? getLocalizedTitle(project) : 'Project Details'} - Matin Meskinnavaz</title>
 </svelte:head>
 
 <!-- Loading State -->
 {#if loading}
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
     <div class="text-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-      <p class="text-gray-600">Loading project details...</p>
+      <p class="text-gray-600">
+        {$currentLanguage === 'fa' ? 'در حال بارگذاری جزئیات پروژه...' : 'Loading project details...'}
+      </p>
     </div>
   </div>
 {:else if error}
   <!-- Error State -->
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
     <div class="text-center">
       <div class="text-red-500 text-6xl mb-4">⚠️</div>
-      <h1 class="text-2xl font-bold text-gray-800 mb-2">Project Not Found</h1>
-      <p class="text-gray-600 mb-6">The project you're looking for doesn't exist or has been removed.</p>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">
+        {$currentLanguage === 'fa' ? 'پروژه یافت نشد' : 'Project Not Found'}
+      </h1>
+      <p class="text-gray-600 mb-6">
+        {$currentLanguage === 'fa' ? 'پروژه‌ای که به دنبال آن هستید وجود ندارد یا حذف شده است.' : 'The project you\'re looking for doesn\'t exist or has been removed.'}
+      </p>
       <a href="/" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
-        Back to Portfolio
+        {$currentLanguage === 'fa' ? 'بازگشت به پورتفولیو' : 'Back to Portfolio'}
       </a>
     </div>
   </div>
 {:else if project}
   <!-- Project Detail Content -->
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
     <!-- Header -->
     <div class="bg-white shadow-sm border-b">
       <div class="max-w-6xl mx-auto px-4 py-6">
@@ -85,9 +110,9 @@
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
-          Back to Portfolio
+          {$currentLanguage === 'fa' ? 'بازگشت به پورتفولیو' : 'Back to Portfolio'}
         </a>
-        <h1 class="text-4xl font-bold text-gray-800">{@html project.title.rendered}</h1>
+        <h1 class="text-4xl font-bold text-gray-800">{getLocalizedTitle(project)}</h1>
       </div>
     </div>
 
@@ -97,11 +122,13 @@
         <!-- Project Images -->
         {#if imageUrl}
           <div class="mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Project Image</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+              {$currentLanguage === 'fa' ? 'تصویر پروژه' : 'Project Image'}
+            </h2>
             <div class="relative group overflow-hidden rounded-lg">
               <img 
                 src={imageUrl} 
-                alt={project.title.rendered}
+                alt={getLocalizedTitle(project)}
                 class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
               />
               <!-- <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div> -->
@@ -111,13 +138,17 @@
 
         <!-- Project Description -->
         <div class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Project Overview</h2>
-          <p class="text-gray-700 leading-relaxed text-lg">{project.acf.description}</p>
+          <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+            {$currentLanguage === 'fa' ? 'نمای کلی پروژه' : 'Project Overview'}
+          </h2>
+          <p class="text-gray-700 leading-relaxed text-lg">{getLocalizedDescription(project)}</p>
         </div>
 
         <!-- Technologies Used -->
         <div class="mb-8">
-          <h2 class="text-2xl font-semibold text-gray-800 mb-4">Technologies Used</h2>
+          <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+            {$currentLanguage === 'fa' ? 'تکنولوژی‌های استفاده شده' : 'Technologies Used'}
+          </h2>
           <div class="flex flex-wrap gap-2">
             {#each project.acf.technologies.split(',').map(tech => tech.trim()) as technology}
               <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
@@ -139,7 +170,7 @@
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
               </svg>
-              View Live Project
+              {$currentLanguage === 'fa' ? 'مشاهده پروژه زنده' : 'View Live Project'}
             </a>
             <a 
               href="/" 
@@ -148,11 +179,32 @@
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
               </svg>
-              Back to Portfolio
+              {$currentLanguage === 'fa' ? 'بازگشت به پورتفولیو' : 'Back to Portfolio'}
             </a>
           </div>
         </div>
       </div>
     </div>
   </div>
-{/if} 
+{/if}
+
+<style>
+  /* RTL specific styles for project detail page */
+  [dir="rtl"] .flex {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .mr-2 {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+
+  [dir="rtl"] .text-center {
+    text-align: center;
+  }
+
+  /* Persian font support */
+  [dir="rtl"] {
+    font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
+  }
+</style> 
