@@ -1,9 +1,99 @@
-/* Vazir Persian Font */
+/* Vazirmatn Persian Font */
 @font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-Thin.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-Thin.woff') format('woff'),
+       url('/fonts/Vazirmatn-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-ExtraLight.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-ExtraLight.woff') format('woff'),
+       url('/fonts/Vazirmatn-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-Light.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-Light.woff') format('woff'),
+       url('/fonts/Vazirmatn-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-Regular.woff') format('woff'),
+       url('/fonts/Vazirmatn-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-Medium.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-Medium.woff') format('woff'),
+       url('/fonts/Vazirmatn-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-SemiBold.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-SemiBold.woff') format('woff'),
+       url('/fonts/Vazirmatn-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-Bold.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-Bold.woff') format('woff'),
+       url('/fonts/Vazirmatn-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-ExtraBold.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-ExtraBold.woff') format('woff'),
+       url('/fonts/Vazirmatn-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Vazirmatn;
+  src: url('/fonts/Vazirmatn-Black.woff2') format('woff2'),
+       url('/fonts/Vazirmatn-Black.woff') format('woff'),
+       url('/fonts/Vazirmatn-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* @font-face {
   font-family: 'Vazir';
-  src: url('/fonts/Vazir.woff2') format('woff2'),
-       url('/fonts/Vazir.woff') format('woff'),
-       url('/fonts/Vazir.ttf') format('truetype');
+  src: url('/fonts/Vazir-Regular.woff2') format('woff2'),
+       url('/fonts/Vazir-Regular.woff') format('woff'),
+       url('/fonts/Vazir-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -37,11 +127,16 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-}
+} */
 
 /* Importing Bootstrap and Tailwind CSS */
 @import "bootstrap/dist/css/bootstrap.min.css"; 
 @import "tailwindcss";
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
 
 /* Global link styles - remove underlines */
 a {
@@ -56,14 +151,18 @@ a:hover {
 [dir="rtl"] {
   direction: rtl;
   text-align: right;
-  font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
-}
-
-/* RTL specific adjustments */
-[dir="rtl"] .ml-auto {
+  font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
   margin-left: 0 !important;
   margin-right: auto !important;
 }
+
+/* RTL specific adjustments */
+/* [dir="rtl"] {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+} */
 
 [dir="rtl"] .mr-auto {
   margin-right: 0 !important;
@@ -109,10 +208,10 @@ a:hover {
 }
 
 /* Persian number support */
-[dir="rtl"] {
+/* [dir="rtl"] {
   font-feature-settings: "tnum";
   font-variant-numeric: tabular-nums;
-}
+} */
 
 /* RTL button and input adjustments */
 [dir="rtl"] input,
@@ -130,4 +229,20 @@ a:hover {
 [dir="rtl"] .icon-right {
   margin-left: 0;
   margin-right: 0.5rem;
+}
+
+.project-card [dir="rtl"] {
+  text-align: right;
+}
+
+/* .flex [dir="rtl"] {
+  flex-direction: row-reverse;
+} */
+
+[dir="rtl"] .btn {
+  direction: rtl;
+}
+
+[dir="rtl"] a {
+  direction: rtl;
 }

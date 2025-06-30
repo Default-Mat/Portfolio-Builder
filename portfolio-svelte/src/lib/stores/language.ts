@@ -15,6 +15,7 @@ export const translations = {
       description: 'Passionate developer with 1+ years of experience creating modern web applications. I specialize in Node.js, Python, and MySQL, delivering scalable solutions that make a difference.'
     },
     skills: {
+      title: 'My Skills',
       frontend: 'Frontend',
       backend: 'Backend',
       devops: 'DevOps',
@@ -45,6 +46,7 @@ export const translations = {
       description: 'توسعه‌دهنده پرشور با بیش از ۱ سال تجربه در ایجاد برنامه‌های وب مدرن. من در Node.js، Python و MySQL تخصص دارم و راه‌حل‌های مقیاس‌پذیری ارائه می‌دهم که تفاوت ایجاد می‌کنند.'
     },
     skills: {
+      title: 'مهارت‌های من',
       frontend: 'فرانت‌اند',
       backend: 'بک‌اند',
       devops: 'دوآپس',

@@ -1,87 +1,29 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { onMount } from 'svelte';
-    import { currentLanguage, translations } from '../../../lib/stores/language.js';
+  import { currentLanguage, translations } from '../../../lib/stores/language.js';
+  export let data: { project: any; imageUrl: string | null };
 
-    // Type for the project data
-    type Project = {
-        id: number;
-        title: { rendered: string };
-        acf: {
-        description: string;
-        technologies: string;
-        url: string;
-        images?: number; // Array of image IDs
-        عنوان?: string; // Persian title
-        توضیحات?: string; // Persian description
-        };
-    };
-
-    let project: Project | null = null;
-    let loading = true;
-    let error = false;
-    let imageUrl: string | null = null;
-
-    $: projectId = $page.params.id;
-
-    onMount(async () => {
-        try {
-            const projectRes = await fetch(`http://localhost/portfolio-wp/wp-json/wp/v2/project/${projectId}`);
-            if (!projectRes.ok) {
-                throw new Error('Project not found');
-            }
-            project = await projectRes.json();
-
-            if (project && project.acf?.images) {
-                let mediaUrl = `http://localhost/portfolio-wp/wp-json/wp/v2/media/${project.acf.images}`;
-                const mediaRes = await fetch(mediaUrl);
-                if (!mediaRes.ok) {
-                    throw new Error('Failed to load media');
-                }
-                const mediaData = await mediaRes.json();
-                
-                imageUrl = mediaData.source_url;
-            }
-        } catch (error) {
-            console.error('Failed to load project:', error);
-            error = true;
-        } finally {
-            loading = false;
-        }
-    });
-
-    // Get localized project title
-    function getLocalizedTitle(project: Project): string {
-        if ($currentLanguage === 'fa' && project.acf.عنوان) {
-            return project.acf.عنوان;
-        }
-        return project.title.rendered;
+  // Get localized project title
+  function getLocalizedTitle(project: any): string {
+    if ($currentLanguage === 'fa' && project.acf.عنوان) {
+      return project.acf.عنوان;
     }
+    return project.title.rendered;
+  }
 
-    // Get localized project description
-    function getLocalizedDescription(project: Project): string {
-        if ($currentLanguage === 'fa' && project.acf.توضیحات) {
-            return project.acf.توضیحات;
-        }
-        return project.acf.description;
+  // Get localized project description
+  function getLocalizedDescription(project: any): string {
+    if ($currentLanguage === 'fa' && project.acf.توضیحات) {
+      return project.acf.توضیحات;
     }
+    return project.acf.description;
+  }
 </script>
 
 <svelte:head>
-  <title>{project ? getLocalizedTitle(project) : 'Project Details'} - Matin Meskinnavaz</title>
+  <title>{data.project ? getLocalizedTitle(data.project) : 'Project Details'} - Matin Meskinnavaz</title>
 </svelte:head>
 
-<!-- Loading State -->
-{#if loading}
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
-    <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-      <p class="text-gray-600">
-        {$currentLanguage === 'fa' ? 'در حال بارگذاری جزئیات پروژه...' : 'Loading project details...'}
-      </p>
-    </div>
-  </div>
-{:else if error}
+{#if !data.project}
   <!-- Error State -->
   <div class="min-h-screen bg-gray-50 flex items-center justify-center" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
     <div class="text-center">
@@ -100,7 +42,7 @@
       </a>
     </div>
   </div>
-{:else if project}
+{:else}
   <!-- Project Detail Content -->
   <div class="min-h-screen bg-gray-50" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
     <!-- Header -->
@@ -112,7 +54,7 @@
           </svg>
           {$currentLanguage === 'fa' ? 'بازگشت به پورتفولیو' : 'Back to Portfolio'}
         </a>
-        <h1 class="text-4xl font-bold text-gray-800">{getLocalizedTitle(project)}</h1>
+        <h1 class="text-4xl font-bold text-gray-800">{getLocalizedTitle(data.project)}</h1>
       </div>
     </div>
 
@@ -120,18 +62,17 @@
     <div class="max-w-4xl mx-auto px-4 py-12">
       <div class="bg-white rounded-xl shadow-lg p-8">
         <!-- Project Images -->
-        {#if imageUrl}
+        {#if data.imageUrl}
           <div class="mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">
               {$currentLanguage === 'fa' ? 'تصویر پروژه' : 'Project Image'}
             </h2>
             <div class="relative group overflow-hidden rounded-lg">
               <img 
-                src={imageUrl} 
-                alt={getLocalizedTitle(project)}
+                src={data.imageUrl} 
+                alt={getLocalizedTitle(data.project)}
                 class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <!-- <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div> -->
             </div>
           </div>
         {/if}
@@ -141,7 +82,7 @@
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
             {$currentLanguage === 'fa' ? 'نمای کلی پروژه' : 'Project Overview'}
           </h2>
-          <p class="text-gray-700 leading-relaxed text-lg">{getLocalizedDescription(project)}</p>
+          <p class="text-gray-700 leading-relaxed text-lg">{getLocalizedDescription(data.project)}</p>
         </div>
 
         <!-- Technologies Used -->
@@ -150,7 +91,7 @@
             {$currentLanguage === 'fa' ? 'تکنولوژی‌های استفاده شده' : 'Technologies Used'}
           </h2>
           <div class="flex flex-wrap gap-2">
-            {#each project.acf.technologies.split(',').map(tech => tech.trim()) as technology}
+            {#each data.project.acf.technologies.split(',').map((tech: string) => tech.trim()) as technology}
               <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
                 {technology}
               </span>
@@ -162,7 +103,7 @@
         <div class="border-t pt-8">
           <div class="flex flex-wrap gap-4">
             <a 
-              href={project.acf.url} 
+              href={data.project.acf.url} 
               target="_blank" 
               rel="noopener noreferrer"
               class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -204,7 +145,7 @@
   }
 
   /* Persian font support */
-  [dir="rtl"] {
+  /* [dir="rtl"] {
     font-family: 'Vazir', 'Tahoma', 'Arial', sans-serif;
-  }
+  } */
 </style> 
