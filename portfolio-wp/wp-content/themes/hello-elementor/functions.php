@@ -268,6 +268,13 @@ if ( ! function_exists( 'hello_elementor_body_open' ) ) {
 	}
 }
 
+// Gemini AI script
+function enqueue_gemini_script($hook) {
+    if ($hook !== 'post-new.php' && $hook !== 'post.php') return;
+    wp_enqueue_script('gemini-ai', get_template_directory_uri() . '/js/gemini-ai.js', ['jquery'], null, true);
+}
+add_action('admin_enqueue_scripts', 'enqueue_gemini_script');
+
 require HELLO_THEME_PATH . '/theme.php';
 
 HelloTheme\Theme::instance();

@@ -30,7 +30,51 @@
       console.error('Failed to load projects:', error);
     }
     
-    // Trigger animations after component mounts
+    // Dynamically import GSAP and ScrollTrigger only on the client
+    const gsapModule = await import('gsap');
+    const ScrollTrigger = (await import('gsap/ScrollTrigger')).ScrollTrigger;
+    gsapModule.gsap.registerPlugin(ScrollTrigger);
+
+    // Animate skills section on scroll
+    gsapModule.gsap.from('.skills-section', {
+      scrollTrigger: {
+        trigger: '.skills-section',
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      y: 50,
+      duration: 1
+    });
+
+    // Animate projects heading on scroll
+    gsapModule.gsap.from('.projects-heading', {
+      scrollTrigger: {
+        trigger: '.projects-heading',
+        start: 'top 80%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      y: 50,
+      duration: 1
+    });
+
+    // Animate each project card on scroll
+    const cards = gsapModule.gsap.utils.toArray('.project-card');
+    cards.forEach((card, index) => {
+      gsapModule.gsap.from(card as HTMLElement, {
+        scrollTrigger: {
+          trigger: card as HTMLElement,
+          start: 'top 90%',
+          toggleActions: 'play none none none'
+        },
+        opacity: 0,
+        y: 30,
+        duration: 1,
+        delay: 0.1 + (index * 0.15)
+      });
+    });
+
     setTimeout(() => {
       mounted = true;
     }, 100);
@@ -91,8 +135,8 @@
         </div>
       </div>
       <!-- Text Content (Below image on mobile, left on desktop) -->
-      <div class="lg:order-first md:order-last sm:order-last flex-1 text-center lg:text-left">
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl xl:!text-8xl text-left font-bold text-gray-800 mb-4 transform transition-all duration-700 delay-200 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
+      <div class="lg:order-first md:order-last sm:order-last flex-1">
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl xl:!text-8xl font-bold text-gray-800 mb-4 transform transition-all duration-700 delay-200 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
           {translations[$currentLanguage].hero.title}
         </h1>
         <p class="text-xl sm:text-2xl lg:text-4xl text-left text-gray-600 mb-6 transform transition-all duration-700 delay-300 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
@@ -107,7 +151,7 @@
 </section>
 
 <!-- Skills Section -->
-<section class="flex flex-col justify-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-16" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
+<section class="skills-section flex flex-col justify-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-16" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
     <h2 class="!text-3xl sm:!text-5xl lg:!text-6xl font-bold text-center text-gray-800 mb-8 sm:mb-12 md:mb-16 skills-heading transform transition-all duration-700 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}" style="transition-delay: 700ms;">
       {translations[$currentLanguage].skills.title}
@@ -133,9 +177,9 @@
 </section>
 
 <!-- Projects Section -->
-<section class="flex flex-col justify-center min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-16 bg-gray-50" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
+<section class="projects-section flex flex-col justify-center min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-16 bg-gray-50" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
-    <h2 class="!text-3xl sm:!text-5xl lg:!text-6xl font-bold text-center text-gray-800 projects-heading transform transition-all duration-700 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}" style="transition-delay: 800ms;">
+    <h2 class="!text-3xl sm:!text-5xl lg:!text-6xl font-bold text-center text-gray-800 projects-heading" >
       {translations[$currentLanguage].projects.title}
     </h2>
 
@@ -143,7 +187,7 @@
     {#if projects.length > 0}
       <div class="project-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10">
         {#each localizedProjects as project, index}
-          <div class="project-card transform transition-all duration-300 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: {900 + (index * 100)}ms;">
+          <div class="project-card">
             <ProjectCard {project} {getLocalizedTitle} {getLocalizedDescription} />
           </div>
         {/each}
