@@ -8,10 +8,14 @@
 !portfolio-svelte/
 !portfolio-wp/
 
-# Ignore everything in portfolio-wp except wp-content
+# Unignore README.md
+!README.md
+
+# Ignore everything in portfolio-wp except wp-content, DB_Backups, and db_backup_script.php
 portfolio-wp/*
 !portfolio-wp/wp-content/
 !portfolio-wp/DB_Backups/
+!portfolio-wp/db_backup_script.php
 
 # Unignore contents
 !portfolio-svelte/**
