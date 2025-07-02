@@ -3,6 +3,7 @@
   import ProjectCard from './project-card.svelte';
   import LanguageSwitcher from '../lib/components/LanguageSwitcher.svelte';
   import { currentLanguage, translations } from '../lib/stores/language.js';
+  import gsap from 'gsap';
 
   // Type for the project data
   type Project = {
@@ -20,6 +21,37 @@
   let projects: Project[] = [];
   let mounted = false;
 
+  // GSAP hover handlers for cards
+  function handleCardMouseEnter(event: MouseEvent) {
+    gsap.to(event.currentTarget, {
+      y: -8,
+      scale: 1.02,
+      boxShadow: '0 10px 20px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)',
+      duration: 0.3,
+      ease: 'power2.out'
+    });
+  }
+  function handleCardMouseLeave(event: MouseEvent) {
+    gsap.to(event.currentTarget, {
+      y: 0,
+      scale: 1,
+      boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
+      duration: 0.3,
+      ease: 'power2.in'
+    });
+  }
+
+  // GSAP entrance animation for hero section
+  let heroTitleEl: HTMLHeadingElement;
+  let heroSubtitleEl: HTMLParagraphElement;
+  let heroDescEl: HTMLParagraphElement;
+  let heroImgEl: HTMLDivElement;
+
+  // Set initial state for hero elements as soon as they are available
+  $: if (heroImgEl && heroTitleEl && heroSubtitleEl && heroDescEl) {
+    gsap.set([heroImgEl, heroTitleEl, heroSubtitleEl, heroDescEl], { opacity: 0, y: 40 });
+  }
+
   // Fetching projects from the WordPress API
   onMount(async () => {
     try {
@@ -35,16 +67,32 @@
     const ScrollTrigger = (await import('gsap/ScrollTrigger')).ScrollTrigger;
     gsapModule.gsap.registerPlugin(ScrollTrigger);
 
-    // Animate skills section on scroll
-    gsapModule.gsap.from('.skills-section', {
+    // Animate skills heading on scroll
+    gsapModule.gsap.from('.skills-heading', {
       scrollTrigger: {
-        trigger: '.skills-section',
+        trigger: '.skills-heading',
         start: 'top 80%',
         toggleActions: 'play none none none'
       },
       opacity: 0,
       y: 50,
-      duration: 1
+      duration: 0.6
+    });
+
+    // Animate skills cards on scroll
+    const skills = gsapModule.gsap.utils.toArray('.skill-card');
+    skills.forEach((skill, index) => {
+      gsapModule.gsap.from(skill as HTMLElement, {
+        scrollTrigger: {
+          trigger: '.skills-grid',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        },
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        delay: 0.05 + (index * 0.05)
+      });
     });
 
     // Animate projects heading on scroll
@@ -56,7 +104,7 @@
       },
       opacity: 0,
       y: 50,
-      duration: 1
+      duration: 0.6
     });
 
     // Animate each project card on scroll
@@ -64,16 +112,22 @@
     cards.forEach((card, index) => {
       gsapModule.gsap.from(card as HTMLElement, {
         scrollTrigger: {
-          trigger: card as HTMLElement,
+          trigger: '.project-grid',
           start: 'top 90%',
           toggleActions: 'play none none none'
         },
         opacity: 0,
         y: 30,
-        duration: 1,
-        delay: 0.1 + (index * 0.15)
+        duration: 0.6,
+        delay: 0.05 + (index * 0.05)
       });
     });
+
+    // Animate hero section elements in sequence
+    gsap.to(heroImgEl, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.1, onStart: () => heroImgEl.classList.remove('hero-animate-init') });
+    gsap.to(heroTitleEl, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.2, onStart: () => heroTitleEl.classList.remove('hero-animate-init') });
+    gsap.to(heroSubtitleEl, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.3, onStart: () => heroSubtitleEl.classList.remove('hero-animate-init') });
+    gsap.to(heroDescEl, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.4, onStart: () => heroDescEl.classList.remove('hero-animate-init') });
 
     setTimeout(() => {
       mounted = true;
@@ -116,12 +170,13 @@
   <div class="max-w-6xl mx-auto">
     <div class="flex flex-col lg:flex-row items-center gap-8 md:gap-12 xl:gap-20">
       <!-- Profile Image (Top on mobile, right on desktop) -->
-      <div class="lg:order-last md:order-first sm:order-first w-[16rem] h-[16rem] sm:w-[20rem] sm:h-[20rem] md:w-[28rem] md:h-[28rem] xl:w-[32rem] xl:h-[32rem] rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg transform transition-all duration-700 {mounted ? 'scale-100 opacity-100' : 'scale-75 opacity-0'} hover:scale-110 hover:shadow-xl overflow-hidden">
+      <div class="lg:order-last md:order-first sm:order-first w-[16rem] h-[16rem] sm:w-[20rem] sm:h-[20rem] md:w-[28rem] md:h-[28rem] xl:w-[32rem] xl:h-[32rem] rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg overflow-hidden hero-animate-init"
+        bind:this={heroImgEl}>
         <img 
           src="/imgs/profile-pic.jpg" 
           alt="" 
           class="w-full h-full object-cover rounded-full"
-          on:error={(e) => {
+          onerror={(e) => {
             // Fallback to icon if image fails to load
             const target = e.target as HTMLImageElement;
             if (target && target.nextElementSibling) {
@@ -136,13 +191,16 @@
       </div>
       <!-- Text Content (Below image on mobile, left on desktop) -->
       <div class="lg:order-first md:order-last sm:order-last flex-1">
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl xl:!text-8xl font-bold text-gray-800 mb-4 transform transition-all duration-700 delay-200 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl xl:!text-8xl font-bold text-gray-800 mb-4 hero-animate-init"
+          bind:this={heroTitleEl}>
           {translations[$currentLanguage].hero.title}
         </h1>
-        <p class="text-xl sm:text-2xl lg:text-4xl text-left text-gray-600 mb-6 transform transition-all duration-700 delay-300 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
+        <p class="text-xl sm:text-2xl lg:text-4xl text-left text-gray-600 mb-6 hero-animate-init"
+          bind:this={heroSubtitleEl}>
           {translations[$currentLanguage].hero.subtitle}
         </p>
-        <p class="text-base sm:text-lg lg:text-xl text-left text-gray-700 leading-relaxed transform transition-all duration-700 delay-400 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}">
+        <p class="text-base sm:text-lg lg:text-xl text-left text-gray-700 leading-relaxed hero-animate-init"
+          bind:this={heroDescEl}>
           {translations[$currentLanguage].hero.description}
         </p>
       </div>
@@ -153,21 +211,30 @@
 <!-- Skills Section -->
 <section class="skills-section flex flex-col justify-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-12 sm:py-16 md:py-20 px-4 sm:px-8 md:px-16" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
-    <h2 class="!text-3xl sm:!text-5xl lg:!text-6xl font-bold text-center text-gray-800 mb-8 sm:mb-12 md:mb-16 skills-heading transform transition-all duration-700 {mounted ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}" style="transition-delay: 700ms;">
+    <h2 class="!text-3xl sm:!text-5xl lg:!text-6xl font-bold text-center text-gray-800 mb-8 sm:mb-12 md:mb-16 skills-heading">
       {translations[$currentLanguage].skills.title}
     </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
-      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: 500ms;">
+    <div class="skills-grid grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
+      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
+        aria-hidden="true"
+        onmouseenter={handleCardMouseEnter}
+        onmouseleave={handleCardMouseLeave}>
         <div class="text-blue-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">💻</div>
         <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.frontend}</h3>
         <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.frontendDesc}</p>
       </div>
-      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: 600ms;">
+      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
+        aria-hidden="true"
+        onmouseenter={handleCardMouseEnter}
+        onmouseleave={handleCardMouseLeave}>
         <div class="text-green-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">⚙️</div>
         <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.backend}</h3>
         <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.backendDesc}</p>
       </div>
-      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 {mounted ? 'animate-fadeInUp' : 'opacity-0 translate-y-8'}" style="animation-delay: 700ms;">
+      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
+        aria-hidden="true"
+        onmouseenter={handleCardMouseEnter}
+        onmouseleave={handleCardMouseLeave}>
         <div class="text-purple-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">☁️</div>
         <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.devops}</h3>
         <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.devopsDesc}</p>
@@ -187,7 +254,10 @@
     {#if projects.length > 0}
       <div class="project-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10">
         {#each localizedProjects as project, index}
-          <div class="project-card">
+          <div class="project-card shadow-md"
+            aria-hidden="true"
+            onmouseenter={handleCardMouseEnter}
+            onmouseleave={handleCardMouseLeave}>
             <ProjectCard {project} {getLocalizedTitle} {getLocalizedDescription} />
           </div>
         {/each}
@@ -237,11 +307,6 @@
     }
   }
 
-  /* Animation classes */
-  .animate-fadeInUp {
-    animation: fadeInUp 0.7s ease-out forwards;
-  }
-
   /* Skill cards - separate initial animation from hover effects */
   .skill-card {
     animation-fill-mode: both;
@@ -249,24 +314,6 @@
 
   .skill-card:hover {
     transition-delay: 0s !important;
-  }
-
-  /* Project cards - separate initial animation from hover effects */
-  .project-card {
-    animation-fill-mode: both;
-  }
-
-  .project-card:hover {
-    transition-delay: 0s !important;
-  }
-
-  /* Enhanced hover effects */
-  .project-grid > div {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .project-grid > div:hover {
-    transform: translateY(-8px);
   }
 
   /* Gradient animation for hero section */
@@ -289,5 +336,15 @@
   /* RTL grid adjustments */
   [dir="rtl"] .grid {
     direction: rtl;
+  }
+
+  .project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  .hero-animate-init {
+    opacity: 0;
+    transform: translateY(40px);
   }
 </style>

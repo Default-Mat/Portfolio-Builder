@@ -1,0 +1,12 @@
+/*
+Theme Name: Dark Hello Elementor
+Theme URI:
+Description: A dark theme for Hello Elementor
+Author: Matin Meskinnavaz
+Author URI: https://localhost/portfolio-wp/
+Template: hello-elementor
+Version: 1.0.0
+*/
+
+/* Import custom CSS */
+@import url('custom.css');
