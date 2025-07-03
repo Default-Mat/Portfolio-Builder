@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { on } from 'svelte/events';
-  import { currentLanguage, translations } from '../lib/stores/language.js';
-  import type { Language } from '../lib/stores/language.js';
-  import { onMount } from 'svelte';
+  import { currentLanguage, translations } from '../stores/language.js';
 
   // Exporting the project data
   export let project;

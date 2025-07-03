@@ -1,25 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import ProjectCard from './project-card.svelte';
+  import ProjectCard from '../lib/components/project-card.svelte';
   import LanguageSwitcher from '../lib/components/LanguageSwitcher.svelte';
   import { currentLanguage, translations } from '../lib/stores/language.js';
   import gsap from 'gsap';
-
-  // Type for the project data
-  type Project = {
-    id: number;
-    title: { rendered: string };
-    acf: {
-      description: string;
-      technologies: string;
-      url: string;
-      عنوان?: string; // Persian title
-      توضیحات?: string; // Persian description
-    };
-  };
-
-  let projects: Project[] = [];
-  let mounted = false;
+  import SkillCard from '../lib/components/SkillCard.svelte';
 
   // GSAP hover handlers for cards
   function handleCardMouseEnter(event: MouseEvent) {
@@ -41,6 +26,67 @@
     });
   }
 
+  // Type for the project data
+  type Project = {
+    id: number;
+    title: { rendered: string };
+    acf: {
+      description: string;
+      technologies: string;
+      url: string;
+      عنوان?: string; // Persian title
+      توضیحات?: string; // Persian description
+    };
+  };
+
+  // Add profile type
+  type Profile = {
+    id: number;
+    title: { rendered: string };
+    acf: {
+      name: string;
+      title: string;
+      bio: string;
+      avatar: number;
+      skills: number[];
+      projects: number[];
+      social_links: number[];
+      // Persian fields
+      نام?: string;
+      عنوان?: string;
+      شرح?: string;
+    };
+  };
+
+  // Type for the skill data
+  type Skill = {
+    id: number;
+    title: { rendered: string };
+    acf: {
+      عنوان: string; // Persian name/title
+      technologies: string;
+    };
+  };
+
+  // Type for the social link data
+  type SocialLink = {
+    id: number;
+    title: { rendered: string };
+    acf: {
+      name: string;
+      url: string;
+      icon?: string; // e.g., image URL or SVG
+      نام?: string; // Persian name
+    };
+  };
+
+  let profile: Profile | null = null;
+  let imageUrl: string | null = null;
+  let projects: Project[] = [];
+  let skills: Skill[] = [];
+  let socialLinks: SocialLink[] = [];
+  let mounted = false;
+
   // GSAP entrance animation for hero section
   let heroTitleEl: HTMLHeadingElement;
   let heroSubtitleEl: HTMLParagraphElement;
@@ -55,11 +101,55 @@
   // Fetching projects from the WordPress API
   onMount(async () => {
     try {
+      // Fetch profile
+      const profileRes = await fetch('http://localhost/portfolio-wp/wp-json/wp/v2/profile');
+      const profileData = await profileRes.json();
+      if (profileData.length > 0) {
+        profile = profileData[0];
+      }
+    } catch (error) {
+      console.error('Failed to load profile data:', error);
+    }
+
+    // Fetch image if available
+    if (profile?.acf.avatar) {
+      const mediaRes = await fetch(`http://localhost/portfolio-wp/wp-json/wp/v2/media/${profile.acf.avatar}`);
+      if (mediaRes.ok) {
+        const mediaData = await mediaRes.json();
+        imageUrl = mediaData.source_url;
+      }
+    }
+
+    try {
       const res = await fetch('http://localhost/portfolio-wp/wp-json/wp/v2/project');
       const data = await res.json();
       projects = data;
     } catch (error) {
       console.error('Failed to load projects:', error);
+    }
+    
+    // Fetch skills and social links in batch if profile is loaded
+    if (profile) {
+      // Fetch all skills in one request
+      if (profile.acf.skills?.length) {
+        const skillIds = profile.acf.skills.join(',');
+        try {
+          const res = await fetch(`http://localhost/portfolio-wp/wp-json/wp/v2/skill?include=${skillIds}`);
+          skills = await res.json();
+        } catch (error) {
+          console.error('Failed to load skills:', error);
+        }
+      }
+      // Fetch all social links in one request
+      if (profile.acf.social_links?.length) {
+        const socialLinkIds = profile.acf.social_links.join(',');
+        try {
+          const res = await fetch(`http://localhost/portfolio-wp/wp-json/wp/v2/social-link?include=${socialLinkIds}`);
+          socialLinks = await res.json();
+        } catch (error) {
+          console.error('Failed to load social links:', error);
+        }
+      }
     }
     
     // Dynamically import GSAP and ScrollTrigger only on the client
@@ -80,8 +170,8 @@
     });
 
     // Animate skills cards on scroll
-    const skills = gsapModule.gsap.utils.toArray('.skill-card');
-    skills.forEach((skill, index) => {
+    const skillsCards = gsapModule.gsap.utils.toArray('.skill-card');
+    skillsCards.forEach((skill, index) => {
       gsapModule.gsap.from(skill as HTMLElement, {
         scrollTrigger: {
           trigger: '.skills-grid',
@@ -172,36 +262,65 @@
       <!-- Profile Image (Top on mobile, right on desktop) -->
       <div class="lg:order-last md:order-first sm:order-first w-[16rem] h-[16rem] sm:w-[20rem] sm:h-[20rem] md:w-[28rem] md:h-[28rem] xl:w-[32rem] xl:h-[32rem] rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg overflow-hidden hero-animate-init"
         bind:this={heroImgEl}>
-        <img 
-          src="/imgs/profile-pic.jpg" 
-          alt="" 
-          class="w-full h-full object-cover rounded-full"
-          onerror={(e) => {
-            // Fallback to icon if image fails to load
-            const target = e.target as HTMLImageElement;
-            if (target && target.nextElementSibling) {
-              target.style.display = 'none';
-              (target.nextElementSibling as HTMLElement).style.display = 'flex';
-            }
-          }}
-        />
+        {#if imageUrl}
+          <img 
+            src={imageUrl} 
+            alt="" 
+            class="w-full h-full object-cover rounded-full"
+            onerror={(e) => {
+              // Fallback to icon if image fails to load
+              const target = e.target as HTMLImageElement;
+              if (target && target.nextElementSibling) {
+                target.style.display = 'none';
+                (target.nextElementSibling as HTMLElement).style.display = 'flex';
+              }
+            }}
+          />
+        {:else}
+          <img 
+            src="/imgs/profile-pic.jpg" 
+            alt="" 
+            class="w-full h-full object-cover rounded-full"
+            onerror={(e) => {
+              // Fallback to icon if image fails to load
+              const target = e.target as HTMLImageElement;
+              if (target && target.nextElementSibling) {
+                target.style.display = 'none';
+                (target.nextElementSibling as HTMLElement).style.display = 'flex';
+              }
+            }}
+          />
+        {/if}
         <div class="w-full h-full flex items-center justify-center" style="display: none;">
           {translations[$currentLanguage].hero.icon}
         </div>
       </div>
       <!-- Text Content (Below image on mobile, left on desktop) -->
       <div class="lg:order-first md:order-last sm:order-last flex-1">
+        <!-- Show profile data if loaded, else fallback to translations -->
         <h1 class="text-4xl sm:text-6xl lg:text-7xl xl:!text-8xl font-bold text-gray-800 mb-4 hero-animate-init"
           bind:this={heroTitleEl}>
-          {translations[$currentLanguage].hero.title}
+          {#if profile}
+            {$currentLanguage === 'fa' ? profile.acf.نام : profile.acf.name}
+          {:else}
+            {translations[$currentLanguage].hero.title}
+          {/if}
         </h1>
         <p class="text-xl sm:text-2xl lg:text-4xl text-left text-gray-600 mb-6 hero-animate-init"
           bind:this={heroSubtitleEl}>
-          {translations[$currentLanguage].hero.subtitle}
+          {#if profile}
+            {$currentLanguage === 'fa' ? profile.acf.عنوان : profile.acf.title}
+          {:else}
+            {translations[$currentLanguage].hero.subtitle}
+          {/if}
         </p>
         <p class="text-base sm:text-lg lg:text-xl text-left text-gray-700 leading-relaxed hero-animate-init"
           bind:this={heroDescEl}>
-          {translations[$currentLanguage].hero.description}
+          {#if profile}
+            {$currentLanguage === 'fa' ? profile.acf.شرح : profile.acf.bio}
+          {:else}
+            {translations[$currentLanguage].hero.description}
+          {/if}
         </p>
       </div>
     </div>
@@ -214,32 +333,42 @@
     <h2 class="!text-3xl sm:!text-5xl lg:!text-6xl font-bold text-center text-gray-800 mb-8 sm:mb-12 md:mb-16 skills-heading">
       {translations[$currentLanguage].skills.title}
     </h2>
-    <div class="skills-grid grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
-      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
-        aria-hidden="true"
-        onmouseenter={handleCardMouseEnter}
-        onmouseleave={handleCardMouseLeave}>
-        <div class="text-blue-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">💻</div>
-        <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.frontend}</h3>
-        <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.frontendDesc}</p>
+    <!-- Custom skills grid from API -->
+    {#if skills.length}
+      <div class="skills-grid grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
+        {#each skills as skill}
+          <SkillCard {skill}/>
+        {/each}
       </div>
-      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
-        aria-hidden="true"
-        onmouseenter={handleCardMouseEnter}
-        onmouseleave={handleCardMouseLeave}>
-        <div class="text-green-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">⚙️</div>
-        <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.backend}</h3>
-        <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.backendDesc}</p>
+    {:else}
+      <!-- Fallback to static skills if API not loaded -->
+      <div class="skills-grid grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
+        <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
+          aria-hidden="true"
+          onmouseenter={handleCardMouseEnter}
+          onmouseleave={handleCardMouseLeave}>
+          <div class="text-blue-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">💻</div>
+          <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.frontend}</h3>
+          <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.frontendDesc}</p>
+        </div>
+        <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
+          aria-hidden="true"
+          onmouseenter={handleCardMouseEnter}
+          onmouseleave={handleCardMouseLeave}>
+          <div class="text-green-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">⚙️</div>
+          <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.backend}</h3>
+          <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.backendDesc}</p>
+        </div>
+        <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
+          aria-hidden="true"
+          onmouseenter={handleCardMouseEnter}
+          onmouseleave={handleCardMouseLeave}>
+          <div class="text-purple-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">☁️</div>
+          <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.devops}</h3>
+          <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.devopsDesc}</p>
+        </div>
       </div>
-      <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
-        aria-hidden="true"
-        onmouseenter={handleCardMouseEnter}
-        onmouseleave={handleCardMouseLeave}>
-        <div class="text-purple-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">☁️</div>
-        <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.devops}</h3>
-        <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.devopsDesc}</p>
-      </div>
-    </div>
+    {/if}
   </div>
 </section>
 
