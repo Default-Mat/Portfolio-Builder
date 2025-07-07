@@ -1,72 +1,66 @@
-# AI-Powered Portfolio Website Builder
+# 🧠✨ AI-Powered Portfolio Website Builder
 
 A modern, responsive, dynamic, and multilingual portfolio built with Svelte, GSAP, and TailwindCSS, featuring dynamic content fetched from a WordPress backend.
 
-## Technologies Used
+---
 
-* [Svelte](https://svelte.dev/)
-* [GSAP](https://gsap.com/)
-* [TailwindCSS](https://tailwindcss.com/)
-* [WordPress](https://developer.wordpress.org/rest-api/)
-* [MySQL](https://www.mysql.com/)
-* [Apache](https://httpd.apache.org/)
-* [Google Gemini AI](https://ai.google.dev/gemini-api/)
+## 🛠️ Technologies Used
 
-## Technology Overview
+* ⚡ [Svelte](https://svelte.dev/)
+* 🎞️ [GSAP](https://gsap.com/)
+* 🎨 [TailwindCSS](https://tailwindcss.com/)
+* 📝 [WordPress](https://developer.wordpress.org/rest-api/)
+* 🛢️ [MySQL](https://www.mysql.com/)
+* 🌐 [Apache](https://httpd.apache.org/)
+* 🤖 [Google Gemini AI](https://ai.google.dev/gemini-api/)
 
-### 1. Svelte
+---
+
+## 📚 Technology Overview
+
+### ⚡ Svelte
 
 Used to build a fast, reactive, and maintainable frontend with compiler-based optimizations.
 
-### 2. GSAP
+### 🎞️ GSAP
 
 Integrated for high-performance animations and smooth micro-interactions, enhancing user experience.
 
-### 3. TailwindCSS
+### 🎨 TailwindCSS
 
 Adopted for rapid styling and maintaining a consistent design system.
 
-### 4. WordPress
+### 📝 WordPress
 
 Used in two ways for maximum flexibility:
 
-* **Headless CMS Backend:**
+* **Headless CMS Backend**
+* **Traditional Frontend Builder**
 
-  * Acts as a decoupled content repository
-  * Exposes data via REST API
-  * Utilizes Advanced Custom Fields (ACF) for custom post types and intuitive content modeling
+### 🛢️ MySQL
 
-* **Traditional Frontend Builder:**
+Reliable relational database system for storing custom post types and content.
 
-  * Uses WordPress’s templating system for marketing pages
-  * Employs Elementor for dynamic, reusable layouts and visual page building
+### 🌐 Apache
 
-### 5. MySQL
-
-Relational database management system for reliable data storage and retrieval.
-
-### 6. Apache
-
-Configured as the web server to host and serve the website reliably and efficiently.
+Serves the website locally or in production environments via XAMPP.
 
 ---
 
-## Project Architecture
+## 🧱 Project Architecture
 
-This portfolio demonstrates two approaches to modern web development for flexibility and performance:
+### ⚙️ Decoupled Architecture
 
-### Decoupled Architecture
+* 🧩 Frontend: Built with Svelte
+* 📡 Backend: WordPress as Headless CMS via REST API
 
-* **Frontend:** Built with Svelte for speed and responsiveness
-* **Backend:** WordPress as Headless CMS with custom post types and REST API
+### 🖥️ Traditional WordPress
 
-### Traditional WordPress Implementation
-
-* Full WordPress stack using Elementor for visual page building and theme customization
+Full WordPress stack using Elementor for no-code dynamic page building.
 
 ---
 
-## Website Structure
+## 🗺️ Website Structure
 
 ```mermaid
 graph LR
@@ -75,55 +69,50 @@ graph LR
   B & C -->|Back Button| A
 ```
 
-> **Note:** This Mermaid diagram renders best in markdown viewers that support Mermaid.js (e.g., GitHub, VS Code with plugin).
+### 📌 Home Page Sections
 
-### Portfolio Home Page Sections
-
-* **Hero:** Animated intro with profile image, name, and summary using GSAP
-* **Skills:** Animated skill cards with scroll-triggered entrance and hover effects
-* **Projects:** Dynamically loaded project cards with specified **filters** from WordPress REST API, responsive grid, and GSAP animations
-* **Footer:** Contact info with animated social links and hover effects
-* **Multilingual Support:** Language switcher toggling between English and Persian, powered by a translation store
-
-### Project Detail Page
-
-* Comprehensive project info including description, images, technical specs, and repository links
+* 🎯 Hero Section – Animated intro with GSAP (**dynamic content fetched from WordPress ACF fields**)
+* 🛠️ Skills – Scroll-triggered skill cards (**dynamic content fetched from WordPress ACF fields**)
+* 💼 Projects – Dynamic WordPress-loaded projects (**fetched via REST API from custom post type**)
+* 🔗 Footer – Contact info and social links (**dynamic data from ACF-based social links post type**)
+* 🌍 Multilingual Support – Switch between English 🇬🇧 and Persian 🇮🇷
 
 ---
 
-## WordPress Plugins Used
+## 🧩 Project Detail Page
 
-* **Advanced Custom Fields (ACF):** For creating custom fields and the 'Projects' post type
-* **Classic Editor:** Provides a stable editing interface, especially when used with ACF
-* **Elementor Pro:** Visual page builder for flexible, responsive layouts without custom CSS
-* **Projects Count Shortcode (Custom Plugin):** Displays total published projects using the `[project_count]` shortcode
+* 📝 Full project descriptions
+* 🖼️ Image galleries
+* 🧪 Technical stack
+* 🔗 Links to repos/demo
 
 ---
 
-## Setup Instructions
+## 🔌 WordPress Plugins Used
 
-### 1. Install Local Server (MySQL + Apache)
+* ⚙️ Advanced Custom Fields (ACF)
+* 📝 Classic Editor
+* 🧰 Elementor Pro
+* 🔢 Projects Count Shortcode (custom plugin)
 
-* Download and install [XAMPP](https://www.apachefriends.org/)
-* Launch XAMPP Control Panel and start Apache and MySQL modules
-* Open [phpMyAdmin](http://localhost/phpmyadmin), create a new database for WordPress
-* (Optional) Set a root password in MySQL:
+---
 
-  * Go to **User Accounts**, edit `root@localhost`, and set a password
-  * Update `C:\xampp\phpMyAdmin\config.inc.php`:
+## 🚀 Setup Instructions
 
-  ```php
-  $cfg['Servers'][$i]['password'] = 'your_password_here';
-  ```
+### 1️⃣ Install Local Server ([XAMPP](https://www.apachefriends.org/)) 🧪
 
-### 2. Clone the Repository
+* 🔧 Start Apache & MySQL
+* ⚙️ Create WordPress DB in phpMyAdmin
+* 🔐 Optional: Set a MySQL root password
+
+### 2️⃣ Clone the Repository 💾
 
 ```bash
 cd "C:\xampp\htdocs\"
 git clone https://github.com/Default-Mat/Portfolio-Builder.git
 ```
 
-### 3. Setup Svelte Frontend
+### 3️⃣ Setup Svelte Frontend ⚡
 
 ```bash
 cd "C:\xampp\htdocs\portfolio-svelte"
@@ -131,73 +120,97 @@ npm install
 npm install tailwindcss @tailwindcss/vite gsap
 ```
 
-### 4. Setup WordPress Backend
+### 4️⃣ Setup WordPress Backend 📝
 
-* Download and extract [WordPress](https://wordpress.org/download/) into `C:\xampp\htdocs\portfolio-wp`
-* Visit [http://localhost/portfolio-wp](http://localhost/portfolio-wp) and follow the installation steps
-* Use the database and credentials configured earlier
-* In WordPress admin, activate the plugins: ACF, Classic Editor, Elementor Pro, and the custom Projects Count plugin
-* Activate the “Hello Elementor” theme
+* Download WordPress into `C:\xampp\htdocs\portfolio-wp`
+* Visit `localhost/portfolio-wp` to install and config
+* Activate Plugins:
 
-### 5. Define Custom Post Types and Fields
+  * ACF
+  * Classic Editor
+  * Elementor Pro
+  * Custom Projects Count Plugin
+* Activate Theme: **Hello Elementor**
 
-#### Profile Post Type
+---
 
-* **Fields:**
+## 🧩 Define Custom Post Types and Fields
 
-  * `name`, `نام` — Full name in English and Persian
-  * `title`, `عنوان` — Job title in English and Persian
-  * `bio`, `شرح` — Bio in English and Persian
-  * `avatar` — Image field for profile picture
-  * `skills`, `projects`, `social_links` — Relationship fields to respective post types
+### 👤 Profile Post Type
 
-#### Projects Post Type
+| Field Name                           | Purpose                           |
+| ------------------------------------ | --------------------------------- |
+| `name`, `نام`                        | Full name in English and Persian  |
+| `title`, `عنوان`                     | Job title                         |
+| `bio`, `شرح`                         | Short biography                   |
+| `avatar`                             | Profile image                     |
+| `skills`, `projects`, `social_links` | Relationships to other post types |
 
-* Already described in setup steps
-* **Fields:**
+### 💼 Projects Post Type
 
-  * `عنوان`, `description`, `توضیحات`, `technologies`, `URL`, `image`
+| Field Name     | Description               |
+| -------------- | ------------------------- |
+| `عنوان`        | Project title (Persian)   |
+| `description`  | Short project description |
+| `توضیحات`      | Full project explanation  |
+| `technologies` | Technologies used         |
+| `URL`          | Link to project/demo/repo |
+| `image`        | Featured image            |
 
-#### Skills Post Type
+### 🛠️ Skills Post Type
 
-* **Fields:**
+| Field Name     | Description              |
+| -------------- | ------------------------ |
+| `عنوان`        | Skill name (Persian)     |
+| `technologies` | Related tools/tech stack |
 
-  * `عنوان`, `technologies`
+### 🔗 Social Links Post Type
 
-#### Social Links Post Type
+| Field Name              | Description              |
+| ----------------------- | ------------------------ |
+| `platform name`, `بستر` | Name of platform (EN/FA) |
+| `URL`                   | Link to social profile   |
 
-* **Fields:**
+📌 Ensure **Show in REST API** is enabled for all post types in ACF → Post Types.
 
-  * `platform name`, `بستر`, `URL`
+---
 
-Make sure all post types are set to **show in REST API** under ACF → Post Types.
-
-### 6. Run the Svelte Development Server
+### 5️⃣ Run the Svelte Dev Server ⚡
 
 ```bash
 cd "C:\xampp\htdocs\portfolio-svelte"
 npm run dev
 ```
 
-Open the local URL shown in your terminal to view the portfolio.
-
 ---
 
-## Custom Features
+## 🧠 Custom Features
 
-### AI-Powered Project Post Suggestions
+### 🤖 AI-Powered Project Post Suggestions
 
-Integrated with Google Gemini AI API for one-click project post suggestions. Modify the API key and behavior in:
+* Integrated with Google Gemini API
+* One-click post generator
+
+📂 Modify behavior in:
 
 ```
 \xampp\htdocs\portfolio-wp\wp-content\themes\hello-elementor\js\gemini-ai.js
+\xampp\htdocs\portfolio-wp\wp-content\themes\hello-elementor\gemini-proxy.php
 ```
 
-> **Security Note:** Never commit your real API key to public repos. Use environment variables or `.env` files for sensitive keys.
+🔐 **Security Note**: Don’t commit API keys. Use `.env` files.
 
-### Projects Count Shortcode Plugin
+---
 
-A custom plugin that displays the number of available projects via the `[project_count]` shortcode. Modify the plugin script at:
+### 🔢 Projects Count Shortcode Plugin
+
+Custom plugin to display project count using:
+
+```shortcode
+[project_count]
+```
+
+📂 Plugin path:
 
 ```
 C:\xampp\htdocs\portfolio-wp\wp-content\plugins\projects-count-shortcode\projects-count-shortcode-script.php
@@ -205,17 +218,63 @@ C:\xampp\htdocs\portfolio-wp\wp-content\plugins\projects-count-shortcode\project
 
 ---
 
-## Usage
+## 💾 Automated MySQL Backups
 
-* Use the language switcher at the top to toggle languages
-* Projects load dynamically from WordPress REST API
-* Enjoy smooth entrance and hover animations powered by GSAP and ScrollTrigger
-* Use the footer’s animated social/contact buttons to connect
+### 🧰 Backup Script
+
+A script (`db_backup_script.php`) located in your WordPress folder backs up your MySQL database:
+
+```
+portfolio-wp/db_backup_script.php
+```
+
+You can manually run this or schedule it using OS tools.
 
 ---
 
-## Customization
+### 🕒 Linux: Add Cron Job
 
-* Add or remove languages by editing the translation store and language switcher
-* Adjust GSAP animations in the `.svelte` component files
-* Update the WordPress API endpoint URL in `+page.svelte` if your backend URL changes
+1. Open crontab:
+
+```bash
+crontab -e
+```
+
+2. Add a scheduled job:
+
+```bash
+0 3 * * * /usr/bin/php /path/to/portfolio-wp/db_backup_script.php >> /var/log/db_backup.log 2>&1
+```
+
+⏰ This runs daily at 3 AM.
+
+---
+
+### 🪟 Windows: Add Task Scheduler Job
+
+1. Open **Task Scheduler**
+2. Create a task:
+
+   * **Trigger:** Daily at preferred time
+   * **Action:** Start a program → `php.exe`
+   * **Arguments:** `C:\xampp\htdocs\portfolio-wp\db_backup_script.php`
+   * **Start In:** `C:\xampp\htdocs\portfolio-wp\`
+
+✅ Done! Backups now run on a schedule.
+
+---
+
+## 💡 Usage
+
+* 🌍 Switch between languages
+* 🔄 Projects load dynamically from WordPress
+* 🎞️ Smooth animations using GSAP
+* 📱 Animated social/contact links in footer
+
+---
+
+## 🎨 Customization
+
+* 🌐 Edit translations for new languages
+* 🎞️ Adjust GSAP animations in `.svelte` files
+* 🔧 Update REST API URLs in `+page.svelte`
