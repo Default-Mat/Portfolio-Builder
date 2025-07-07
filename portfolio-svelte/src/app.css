@@ -89,46 +89,6 @@
   font-display: swap;
 }
 
-/* @font-face {
-  font-family: 'Vazir';
-  src: url('/fonts/Vazir-Regular.woff2') format('woff2'),
-       url('/fonts/Vazir-Regular.woff') format('woff'),
-       url('/fonts/Vazir-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vazir';
-  src: url('/fonts/Vazir-Bold.woff2') format('woff2'),
-       url('/fonts/Vazir-Bold.woff') format('woff'),
-       url('/fonts/Vazir-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vazir';
-  src: url('/fonts/Vazir-Light.woff2') format('woff2'),
-       url('/fonts/Vazir-Light.woff') format('woff'),
-       url('/fonts/Vazir-Light.ttf') format('truetype');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Vazir';
-  src: url('/fonts/Vazir-Medium.woff2') format('woff2'),
-       url('/fonts/Vazir-Medium.woff') format('woff'),
-       url('/fonts/Vazir-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-} */
-
 /* Importing Bootstrap and Tailwind CSS */
 @import "bootstrap/dist/css/bootstrap.min.css"; 
 @import "tailwindcss";
@@ -157,12 +117,6 @@ a:hover {
   margin-left: 0 !important;
   margin-right: auto !important;
 }
-
-/* RTL specific adjustments */
-/* [dir="rtl"] {
-  margin-left: 0 !important;
-  margin-right: auto !important;
-} */
 
 [dir="rtl"] .mr-auto {
   margin-right: 0 !important;
@@ -207,12 +161,6 @@ a:hover {
   text-align: left !important;
 }
 
-/* Persian number support */
-/* [dir="rtl"] {
-  font-feature-settings: "tnum";
-  font-variant-numeric: tabular-nums;
-} */
-
 /* RTL button and input adjustments */
 [dir="rtl"] input,
 [dir="rtl"] textarea,
@@ -234,10 +182,6 @@ a:hover {
 .project-card [dir="rtl"] {
   text-align: right;
 }
-
-/* .flex [dir="rtl"] {
-  flex-direction: row-reverse;
-} */
 
 [dir="rtl"] .btn {
   direction: rtl;

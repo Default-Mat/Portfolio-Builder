@@ -5,6 +5,7 @@
   import { currentLanguage, translations } from '../lib/stores/language.js';
   import gsap from 'gsap';
   import SkillCard from '../lib/components/SkillCard.svelte';
+  import { tick } from 'svelte';
 
   // GSAP hover handlers for cards
   function handleCardMouseEnter(event: MouseEvent) {
@@ -100,6 +101,8 @@
 
   // Fetching projects from the WordPress API
   onMount(async () => {
+    window.scrollTo(0, 0);
+
     try {
       // Fetch profile
       const profileRes = await fetch('http://localhost/portfolio-wp/wp-json/wp/v2/profile');
@@ -120,6 +123,7 @@
       }
     }
 
+    // Fetch projects
     try {
       const res = await fetch('http://localhost/portfolio-wp/wp-json/wp/v2/project');
       const data = await res.json();
@@ -202,7 +206,7 @@
     cards.forEach((card, index) => {
       gsapModule.gsap.from(card as HTMLElement, {
         scrollTrigger: {
-          trigger: '.project-grid',
+          trigger: card as HTMLElement,
           start: 'top 90%',
           toggleActions: 'play none none none'
         },
@@ -224,8 +228,8 @@
     }, 100);
   });
 
-  // Create reactive localized projects data
-  $: localizedProjects = projects.map(project => ({
+  // Create reactive localized filtered projects data
+  $: localizedFilteredProjects = filteredProjects.map(project => ({
     ...project,
     localizedTitle: $currentLanguage === 'fa' && project.acf.عنوان 
       ? project.acf.عنوان 
@@ -236,19 +240,59 @@
   }));
 
   // Get localized project title
-  function getLocalizedTitle(project: Project): string {
-    if ($currentLanguage === 'fa' && project.acf.عنوان) {
-      return project.acf.عنوان;
-    }
-    return project.title.rendered;
-  }
+  // function getLocalizedTitle(project: Project): string {
+  //   if ($currentLanguage === 'fa' && project.acf.عنوان) {
+  //     return project.acf.عنوان;
+  //   }
+  //   return project.title.rendered;
+  // }
 
-  // Get localized project description
-  function getLocalizedDescription(project: Project): string {
-    if ($currentLanguage === 'fa' && project.acf.توضیحات) {
-      return project.acf.توضیحات;
-    }
-    return project.acf.description;
+  // // Get localized project description
+  // function getLocalizedDescription(project: Project): string {
+  //   if ($currentLanguage === 'fa' && project.acf.توضیحات) {
+  //     return project.acf.توضیحات;
+  //   }
+  //   return project.acf.description;
+  // }
+
+  let selectedTech: string = 'All';
+  let projectGridEl: HTMLDivElement;
+
+  // Extract all unique technologies from projects
+  $: allTechnologies = Array.from(
+    new Set(
+      projects
+        .flatMap(p => p.acf.technologies.split(',').map((t: string) => t.trim()))
+        .filter(Boolean)
+    )
+  );
+
+  // Filtered projects based on selected technology
+  $: filteredProjects = selectedTech !== 'All'
+    ? projects.filter(p =>
+        p.acf.technologies
+          .split(',')
+          .map((t: string) => t.trim())
+          .includes(selectedTech)
+      )
+    : projects;
+
+  // Animate project cards on filter change
+  $: if (filteredProjects && projectGridEl) {
+    tick().then(() => {
+      const cards = projectGridEl.querySelectorAll('.project-card');
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.07,
+          ease: 'power2.out'
+        }
+      );
+    });
   }
 </script>
 
@@ -256,7 +300,7 @@
 <LanguageSwitcher />
 
 <!-- Hero Section with Personal Information -->
-<section class="flex flex-col justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-16 px-4 overflow-hidden" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
+<section class="flex flex-col justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:bg-gray-800 py-16 px-4 overflow-hidden" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}>
   <div class="max-w-6xl mx-auto">
     <div class="flex flex-col lg:flex-row items-center gap-8 md:gap-12 xl:gap-20">
       <!-- Profile Image (Top on mobile, right on desktop) -->
@@ -298,7 +342,7 @@
       <!-- Text Content (Below image on mobile, left on desktop) -->
       <div class="lg:order-first md:order-last sm:order-last flex-1">
         <!-- Show profile data if loaded, else fallback to translations -->
-        <h1 class="text-4xl sm:text-6xl lg:text-7xl xl:!text-8xl font-bold text-gray-800 mb-4 hero-animate-init"
+        <h1 class="sm:!text-5xl md:!text-6xl lg:!text-7xl xl:!text-8xl font-bold text-gray-800 mb-4 hero-animate-init"
           bind:this={heroTitleEl}>
           {#if profile}
             {$currentLanguage === 'fa' ? profile.acf.نام : profile.acf.name}
@@ -348,7 +392,7 @@
           onmouseenter={handleCardMouseEnter}
           onmouseleave={handleCardMouseLeave}>
           <div class="text-blue-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">💻</div>
-          <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.frontend}</h3>
+          <h3 class="lg:!text-3xl md:!text-2xl sm:!text-xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.frontend}</h3>
           <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.frontendDesc}</p>
         </div>
         <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
@@ -356,7 +400,7 @@
           onmouseenter={handleCardMouseEnter}
           onmouseleave={handleCardMouseLeave}>
           <div class="text-green-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">⚙️</div>
-          <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.backend}</h3>
+          <h3 class="lg:!text-3xl md:!text-2xl sm:!text-xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.backend}</h3>
           <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.backendDesc}</p>
         </div>
         <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
@@ -364,7 +408,7 @@
           onmouseenter={handleCardMouseEnter}
           onmouseleave={handleCardMouseLeave}>
           <div class="text-purple-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">☁️</div>
-          <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.devops}</h3>
+          <h3 class="lg:!text-3xl md:!text-2xl sm:!text-xl font-semibold text-gray-800 mb-1 sm:mb-2">{translations[$currentLanguage].skills.devops}</h3>
           <p class="text-base sm:text-lg text-gray-600">{translations[$currentLanguage].skills.devopsDesc}</p>
         </div>
       </div>
@@ -379,23 +423,39 @@
       {translations[$currentLanguage].projects.title}
     </h2>
 
+    <!-- Filter Buttons -->
+    <div class="flex flex-wrap gap-2 mb-8 justify-center">
+      <button
+        class="px-4 py-2 !rounded-full border font-medium transition-all duration-200 border-blue-600 focus:outline-none {selectedTech === 'All' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50'}"
+        onclick={() => selectedTech = 'All'}
+      >
+      {$currentLanguage === 'fa' ? 'همه' : 'All'}
+      </button>
+      {#each allTechnologies as tech}
+        <button
+          class="px-4 py-2 !rounded-full border font-medium transition-all duration-200 border-blue-600 focus:outline-none {selectedTech === tech ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50'}"
+          onclick={() => selectedTech = tech}
+        >
+          {tech}
+        </button>
+      {/each}
+    </div>
+
     <!-- Displaying projects -->
-    {#if projects.length > 0}
-      <div class="project-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10">
-        {#each localizedProjects as project, index}
-          <div class="project-card shadow-md"
+    {#if localizedFilteredProjects.length > 0}
+      <div class="project-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10" bind:this={projectGridEl}>
+        {#each localizedFilteredProjects as project, index (project.id)}
+          <div class="project-card bg-white rounded-lg shadow-md hover:shadow-lg border border-gray-200 p-6 flex flex-col gap-3 h-full" dir={$currentLanguage === 'fa' ? 'rtl' : 'ltr'}
             aria-hidden="true"
             onmouseenter={handleCardMouseEnter}
             onmouseleave={handleCardMouseLeave}>
-            <ProjectCard {project} {getLocalizedTitle} {getLocalizedDescription} />
+            <ProjectCard {project} />
           </div>
         {/each}
       </div>
     {:else}
-      <div class="flex justify-center items-center min-h-[200px] transform transition-all duration-700 {mounted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}">
-        <div class="spinner-border text-primary animate-spin" role="status">
-          <span class="visually-hidden">{translations[$currentLanguage].projects.loading}</span>
-        </div>
+      <div class="text-center text-gray-500 py-12">
+        No projects found for this technology.
       </div>
     {/if}
   </div>

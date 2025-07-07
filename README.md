@@ -81,7 +81,7 @@ graph LR
 
 * **Hero:** Animated intro with profile image, name, and summary using GSAP
 * **Skills:** Animated skill cards with scroll-triggered entrance and hover effects
-* **Projects:** Dynamically loaded project cards from WordPress REST API, responsive grid, and GSAP animations
+* **Projects:** Dynamically loaded project cards with specified **filters** from WordPress REST API, responsive grid, and GSAP animations
 * **Footer:** Contact info with animated social links and hover effects
 * **Multilingual Support:** Language switcher toggling between English and Persian, powered by a translation store
 
@@ -138,15 +138,41 @@ npm install tailwindcss @tailwindcss/vite gsap
 * Use the database and credentials configured earlier
 * In WordPress admin, activate the plugins: ACF, Classic Editor, Elementor Pro, and the custom Projects Count plugin
 * Activate the “Hello Elementor” theme
-* Create the 'Projects' custom post type via ACF:
 
-  * Go to ACF → Post Types → Add New
-  * Set Plural Label: **Projects**
-  * Singular Label: **Project**
-  * Post Type Key: **project**
-  * Enable **Show in REST API**
+### 5. Define Custom Post Types and Fields
 
-### 5. Run the Svelte Development Server
+#### Profile Post Type
+
+* **Fields:**
+
+  * `name`, `نام` — Full name in English and Persian
+  * `title`, `عنوان` — Job title in English and Persian
+  * `bio`, `شرح` — Bio in English and Persian
+  * `avatar` — Image field for profile picture
+  * `skills`, `projects`, `social_links` — Relationship fields to respective post types
+
+#### Projects Post Type
+
+* Already described in setup steps
+* **Fields:**
+
+  * `عنوان`, `description`, `توضیحات`, `technologies`, `URL`, `image`
+
+#### Skills Post Type
+
+* **Fields:**
+
+  * `عنوان`, `technologies`
+
+#### Social Links Post Type
+
+* **Fields:**
+
+  * `platform name`, `بستر`, `URL`
+
+Make sure all post types are set to **show in REST API** under ACF → Post Types.
+
+### 6. Run the Svelte Development Server
 
 ```bash
 cd "C:\xampp\htdocs\portfolio-svelte"

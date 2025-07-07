@@ -21,10 +21,13 @@ portfolio-wp/*
 !portfolio-svelte/**
 !portfolio-wp/wp-content/**
 !portfolio-wp/DB_Backups/**
+!portfolio-wp/wp-content/themes/hello-elementor/**
 
 # Specifically ignore unwanted subfolders in wp-content
 portfolio-wp/wp-content/uploads/
 portfolio-wp/wp-content/cache/
+portfolio-wp/wp-content/themes/hello-elementor/.env
+portfolio-wp/wp-content/themes/hello-elementor/vendor/
 
 # System files
 .DS_Store

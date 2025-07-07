@@ -5,19 +5,25 @@ jQuery(document).ready(function($) {
     button.on('click', async function() {
         const prompt = `
             i created a "projects" post type using acf in wordpress.
-            the fields i defined for each project are title, farsi_title, description, farsi_description, technologies, and url.
-            i want you to suggest a project with these information.
+            the fields i defined for each project are title, farsi_title, description, farsi_description, technologies, url, and image.
+            the farsi_title and farsi_description are the same as title and description, but in farsi.
+            i want you to suggest a project each time i ask you, with these information.
+            it can be a project related to anything. AI, web, mobile, desktop, etc. but don't suggest the same project twice.
+            for the technologies, separate them with comma.
             only aswer me in json format.
             don't write anything else.
         `;
 
-        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC96DJRb9-WRzUhLlgphHvNpynsJ0Mh3FM', {
+        const response = await fetch('/portfolio-wp/wp-content/themes/hello-elementor/gemini-proxy.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 1.3,
+                }
             })
         });
 

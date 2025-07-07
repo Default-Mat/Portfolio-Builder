@@ -271,7 +271,7 @@ if ( ! function_exists( 'hello_elementor_body_open' ) ) {
 // Gemini AI script
 function enqueue_gemini_script($hook) {
     if ($hook !== 'post-new.php' && $hook !== 'post.php') return;
-    wp_enqueue_script('gemini-ai', get_template_directory_uri() . '/js/gemini-ai.js', ['jquery'], null, true);
+    wp_enqueue_script('gemini-ai', get_stylesheet_directory_uri() . '/js/gemini-ai.js', array('jquery'), filemtime(get_stylesheet_directory() . '/js/gemini-ai.js'), true);
 }
 add_action('admin_enqueue_scripts', 'enqueue_gemini_script');
 

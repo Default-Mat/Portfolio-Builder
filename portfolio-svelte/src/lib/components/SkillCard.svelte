@@ -38,12 +38,13 @@
   });
 </script>
 
+<!-- Skill card component -->
 <div class="skill-card bg-white rounded-xl p-4 sm:p-6 md:p-8 shadow-md"
   aria-hidden="true"
   onmouseenter={handleCardMouseEnter}
   onmouseleave={handleCardMouseLeave}>
   <div class="text-blue-600 text-2xl sm:text-3xl mb-2 sm:mb-3 transform transition-transform duration-300 hover:scale-110">💻</div>
-  <h3 class="!text-xl sm:!text-2xl md:!text-3xl font-semibold text-gray-800 mb-1 sm:mb-2">
+  <h3 class="lg:!text-3xl md:!text-2xl sm:!text-xl font-semibold text-gray-800 mb-1 sm:mb-2">
     {$currentLanguage === 'fa' ? skill.acf.عنوان : skill.title.rendered}
   </h3>
   <p class="text-base sm:text-lg text-gray-600">{skill.acf.technologies}</p>

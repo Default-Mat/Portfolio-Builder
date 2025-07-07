@@ -1,6 +1,15 @@
 <script lang="ts">
   import { currentLanguage, translations } from '../../../lib/stores/language.js';
+  import LanguageSwitcher from '../../../lib/components/LanguageSwitcher.svelte';
   export let data: { project: any; imageUrl: string | null };
+
+  $: localizedTitle = $currentLanguage === 'fa' && data.project?.acf.عنوان
+    ? data.project.acf.عنوان
+    : data.project?.title.rendered;
+
+  $: localizedDescription = $currentLanguage === 'fa' && data.project?.acf.توضیحات
+    ? data.project.acf.توضیحات
+    : data.project?.acf.description;
 
   // Get localized project title
   function getLocalizedTitle(project: any): string {
@@ -19,8 +28,11 @@
   }
 </script>
 
+<!-- Language Switcher -->
+<LanguageSwitcher />
+
 <svelte:head>
-  <title>{data.project ? getLocalizedTitle(data.project) : 'Project Details'} - Matin Meskinnavaz</title>
+  <title>{data.project ? localizedTitle : 'Project Details'} - Matin Meskinnavaz</title>
 </svelte:head>
 
 {#if !data.project}
@@ -54,7 +66,7 @@
           </svg>
           {$currentLanguage === 'fa' ? 'بازگشت به پورتفولیو' : 'Back to Portfolio'}
         </a>
-        <h1 class="text-4xl font-bold text-gray-800">{getLocalizedTitle(data.project)}</h1>
+        <h1 class="text-4xl font-bold text-gray-800">{localizedTitle}</h1>
       </div>
     </div>
 
@@ -70,7 +82,7 @@
             <div class="relative group overflow-hidden rounded-lg">
               <img 
                 src={data.imageUrl} 
-                alt={getLocalizedTitle(data.project)}
+                alt={localizedTitle}
                 class="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
               />
             </div>
@@ -82,7 +94,7 @@
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
             {$currentLanguage === 'fa' ? 'نمای کلی پروژه' : 'Project Overview'}
           </h2>
-          <p class="text-gray-700 leading-relaxed text-lg">{getLocalizedDescription(data.project)}</p>
+          <p class="text-gray-700 leading-relaxed text-lg">{localizedDescription}</p>
         </div>
 
         <!-- Technologies Used -->
