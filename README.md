@@ -73,13 +73,13 @@ graph LR
 
 * 🎯 Hero Section – Animated intro with GSAP (**dynamic content fetched from WordPress ACF fields**)
 * 🛠️ Skills – Scroll-triggered skill cards (**dynamic content fetched from WordPress ACF fields**)
-* 💼 Projects – Dynamic WordPress-loaded projects (**fetched via REST API from custom post type**)
+* 💼 Projects – Dynamic WordPress-loaded projects accessible by technology filtering (**fetched via REST API from custom post type**)
 * 🔗 Footer – Contact info and social links (**dynamic data from ACF-based social links post type**)
 * 🌍 Multilingual Support – Switch between English 🇬🇧 and Persian 🇮🇷
 
 ---
 
-## 🧩 Project Detail Page
+## 🧩 Projects Detail Page
 
 * 📝 Full project descriptions
 * 🖼️ Image galleries
@@ -151,8 +151,8 @@ npm install tailwindcss @tailwindcss/vite gsap
 | Field Name     | Description               |
 | -------------- | ------------------------- |
 | `عنوان`        | Project title (Persian)   |
-| `description`  | Short project description |
-| `توضیحات`      | Full project explanation  |
+| `description`  | Project description |
+| `توضیحات`      | (Persian) project explanation  |
 | `technologies` | Technologies used         |
 | `URL`          | Link to project/demo/repo |
 | `image`        | Featured image            |
